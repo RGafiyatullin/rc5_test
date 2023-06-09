@@ -1,3 +1,19 @@
+[workspace]
+members = [
+    ".",
+    "crates/*",
+]
+
+[workspace.dependencies]
+generic-array = "^0.14"
+hex = "^0.4"
+thiserror = "^1"
+typenum = "^1"
+
+rc5-core = {path = "crates/rc5-core"}
+rc5-original-api = {path = "crates/rc5-original-api"}
+
+
 [package]
 name = "rc5_test"
 version = "0.1.0"
@@ -5,3 +21,4 @@ authors = ["Ben Marsh <ben.marsh@mintlayer.org>"]
 edition = "2018"
 
 [dependencies]
+rc5-original-api = {workspace = true}
