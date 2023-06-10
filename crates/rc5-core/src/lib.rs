@@ -3,7 +3,10 @@
 pub mod algs;
 pub mod traits;
 
-pub mod words;
+pub mod std_words;
+
+#[macro_use]
+pub mod strange_words;
 
 #[cfg(test)]
 #[macro_use]

@@ -5,10 +5,12 @@ members = [
 ]
 
 [workspace.dependencies]
+cipher = "^0.4"
 generic-array = "^0.14"
 hex = "^0.4"
 thiserror = "^1"
 typenum = "^1"
+zeroize = "^1"
 
 rc5-core = {path = "crates/rc5-core"}
 rc5-original-api = {path = "crates/rc5-original-api"}

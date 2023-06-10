@@ -19,16 +19,27 @@ where
     B: ArrayLength<u8>,
     Word: WordSize,
     WBR: WordByteRepr<Word>,
+
+    Word: core::fmt::Debug,
 {
     let key_bytes = key.as_slice();
     let key_words = l_table.as_mut_slice();
 
-    for (w_idx, word) in key_words.iter_mut().enumerate() {
-        let b0_idx = w_idx * Word::ByteLen::USIZE;
+    for (dst_word, src_bytes) in key_words.iter_mut().zip(key_bytes.chunks(Word::ByteLen::USIZE)) {
+        let mut w_bytes = WordBytes::<Word>::default();
 
-        let w_bytes = WordBytes::<Word>::from_slice(&key_bytes[b0_idx..][0..Word::ByteLen::USIZE]);
-        *word = WBR::from_bytes(w_bytes);
+        for (dst_byte, src_byte) in
+            w_bytes.as_mut_slice().iter_mut().rev().zip(src_bytes.iter().rev())
+        {
+            *dst_byte = *src_byte;
+        }
+
+        *dst_word = WBR::from_bytes(&w_bytes);
     }
+
+    // for (idx, word) in l_table.iter().enumerate() {
+    //     eprintln!("L[{}]: {:06X?}", idx, word);
+    // }
 }
 
 pub fn s_table_init<Word, R, M, A>(s_table: &mut KeySTable<R, Word>)
@@ -38,11 +49,17 @@ where
     KeySTableSize<R>: ArrayLength<Word>,
     Sum<R, typenum::U1>: Mul<typenum::U2>,
     R: Add<typenum::U1>,
+
+    Word: core::fmt::Debug,
 {
     s_table[0] = M::P;
     for i in 1..KeySTableSize::<R>::USIZE {
         s_table[i] = A::add(&s_table[i - 1], &M::Q);
     }
+
+    // for (idx, word) in s_table.iter().enumerate() {
+    //     eprintln!("S[{}]: {:06X?}", idx, word);
+    // }
 }
 
 pub fn s_table_mix_secret_key<Word, B, R, A, M>(
@@ -63,6 +80,8 @@ pub fn s_table_mix_secret_key<Word, B, R, A, M>(
     Word: WordSize + Default + Copy,
     A: Arithmetics<Word>,
     M: Magic<Word>,
+
+    Word: core::fmt::Debug,
 {
     let mut i: usize = 0;
     let mut j: usize = 0;
@@ -74,9 +93,11 @@ pub fn s_table_mix_secret_key<Word, B, R, A, M>(
     for _ in 0..(3 * t.max(c)) {
         a = A::rotl(&A::add(&s_table[i], &A::add(&a, &b)), &M::THREE);
         s_table[i] = a;
+        // eprintln!("S[{}]: {:06X?}", i, a);
 
         b = A::rotl(&A::add(&l_table[j], &A::add(&a, &b)), &A::add(&a, &b));
         l_table[j] = b;
+        // eprintln!("L[{}]: {:06X?}", j, b);
 
         i = (i + 1) % t;
         j = (j + 1) % c;
@@ -85,7 +106,7 @@ pub fn s_table_mix_secret_key<Word, B, R, A, M>(
 
 #[test]
 fn test_key_bytes_to_words_01() {
-    use crate::words::LittleEndian;
+    use crate::std_words::LittleEndian;
 
     type W = u32;
     type KS = typenum::U16;
@@ -102,8 +123,8 @@ fn test_key_bytes_to_words_01() {
 
 #[test]
 fn test_s_table_init() {
-    use crate::words::StdArith;
-    use crate::words::StdMagic;
+    use crate::std_words::StdArith;
+    use crate::std_words::StdMagic;
 
     type R = typenum::U12;
     type W = u32;

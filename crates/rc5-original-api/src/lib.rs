@@ -1,12 +1,12 @@
 //! This crate provides the API originally proposed in the test-task.
-//! 
+//!
 
 use rc5_core::traits::{KeyBytes, KeyLTable, KeySTable, WordByteRepr, WordBytes};
 
 type Word = u32;
-type Arith = rc5_core::words::StdArith;
-type ByteRepr = rc5_core::words::LittleEndian;
-type Magic = rc5_core::words::StdMagic;
+type Arith = rc5_core::std_words::StdArith;
+type ByteRepr = rc5_core::std_words::LittleEndian;
+type Magic = rc5_core::std_words::StdMagic;
 
 type R = typenum::U12;
 type B = typenum::U16;

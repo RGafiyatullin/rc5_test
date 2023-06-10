@@ -3,10 +3,10 @@ use crate::traits::Magic;
 use crate::traits::WordByteRepr;
 use crate::traits::WordSize;
 
-pub struct LittleEndian;
-pub struct StdMagic;
+pub enum LittleEndian {}
+pub enum StdMagic {}
 
-pub struct StdArith;
+pub enum StdArith {}
 
 macro_rules! impl_word {
     ($W: ty, $S: ty, $p: literal, $q: literal) => {
