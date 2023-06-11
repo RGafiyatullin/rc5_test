@@ -54,6 +54,15 @@ fn rc5_32_20_16_with_strange_word() {
     )
 }
 
+/*
+   A note on Krovetz's cases with word-sizes other than powers of two.
+
+   In the code provided with the draft, at least the rotations work incorrectly for the non standard word-sizes.
+   The rotation amount is defined as "take lg2(W) bits of the provided argument",
+   which is effectively dividing modulo 2^lg(W).
+   This just happens to work with the standard word-sizes, but with the 24-bit words it incorrectly choses the modulo 32.
+*/
+
 #[test]
 #[ignore]
 fn rc5_24_4_0() {
