@@ -66,3 +66,6 @@ pub fn decode(key: Vec<u8>, ciphertext: Vec<u8>) -> Vec<u8> {
 
     plaintext
 }
+
+#[cfg(test)]
+mod tests;

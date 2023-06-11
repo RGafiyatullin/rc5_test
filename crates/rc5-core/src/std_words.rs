@@ -60,7 +60,7 @@ macro_rules! impl_word {
 }
 
 impl_word!(u8, typenum::U1, 0xB7, 0x9F);
-impl_word!(u16, typenum::U2, 0xB7E1, 0x9E27);
+impl_word!(u16, typenum::U2, 0xB7E1, 0x9E37);
 impl_word!(u32, typenum::U4, 0xB7E1_5163, 0x9E37_79B9);
 impl_word!(
     u64,

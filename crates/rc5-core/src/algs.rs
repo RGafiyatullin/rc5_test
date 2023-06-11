@@ -31,20 +31,10 @@ pub fn expand_key<Word, R, B, M, WBR, A>(
     WBR: WordByteRepr<Word>,
     A: Arithmetics<Word>,
     M: Magic<Word>,
-
-    Word: core::fmt::Debug,
 {
-    key_table::key_bytes_to_words::<Word, B, WBR>(key_bytes, l_table);
+    key_table::l_table_init::<Word, B, WBR>(key_bytes, l_table);
     key_table::s_table_init::<Word, R, M, A>(s_table);
     key_table::s_table_mix_secret_key::<Word, B, R, A, M>(l_table, s_table);
-
-    // for (idx, word) in l_table.iter().enumerate() {
-    //     eprintln!("L[{}]: {:08x?}", idx, word);
-    // }
-
-    // for (idx, word) in s_table.iter().enumerate() {
-    //     eprintln!("S[{}]: {:08x?}", idx, word);
-    // }
 }
 
 pub fn encrypt<Word, R, A>(s_table: &KeySTable<R, Word>, reg_a: &mut Word, reg_b: &mut Word)

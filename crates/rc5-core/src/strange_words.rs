@@ -38,9 +38,9 @@ macro_rules! strange_word_impl {
             impl StrangeWord {
                 const fn assert_sound(self) -> Self {
                     // if self.0 >= MODULO {
-                    //     eprintln!("ASSERTION FAILED!");
-                    //     eprintln!("m: {:16b}", MODULO);
-                    //     eprintln!("e: {:016b}", self.0);
+                    //     eprintln!("\tASSERTION FAILED!");
+                    //     eprintln!("\tm: {:24b}", MODULO);
+                    //     eprintln!("\te: {:024b}", self.0);
                     // }
 
                     assert!(self.0 < MODULO);
@@ -61,8 +61,8 @@ macro_rules! strange_word_impl {
 
             impl WordByteRepr<StrangeWord> for StrangeByteRepr {
                 fn from_bytes(b: &WordBytes<StrangeWord>) -> StrangeWord {
-                    // eprintln!("from_bytes");
-                    // eprintln!("h: {:02x}", b);
+                    // eprintln!("\tfrom_bytes");
+                    // eprintln!("\th: {:02x}", b);
 
                     let mut dummy = <$Container>::to_le_bytes(0);
                     dummy[..<StrangeWord as WordSize>::ByteLen::USIZE].copy_from_slice(b.as_ref());
@@ -82,15 +82,16 @@ macro_rules! strange_word_impl {
                     let l = l.assert_sound().0;
                     let r = r.assert_sound().0;
                     let out = l + r;
+                    let out = out % MODULO;
 
-                    // #[cfg(test)]
-                    // {
-                    //     eprintln!("add");
-                    //     eprintln!("m: {:16b}", MODULO);
-                    //     eprintln!("l: {:016b}", l);
-                    //     eprintln!("r: {:016b}", r);
-                    //     eprintln!("o: {:016b}", out);
-                    // }
+                    #[cfg(test)]
+                    {
+                        eprintln!("\tadd");
+                        // eprintln!("\tm: {:24b}", MODULO);
+                        eprintln!("\tl: {:024b} | {:06x}", l, l);
+                        eprintln!("\tr: {:024b} | {:06x}", r, r);
+                        eprintln!("\to: {:024b} | {:06x}", out, out);
+                    }
 
                     StrangeWord(out % MODULO).assert_sound()
                 }
@@ -100,71 +101,81 @@ macro_rules! strange_word_impl {
                     let r = r.assert_sound().0;
                     let inv = MODULO - r;
                     let out = l + inv;
+                    let out = out % MODULO;
 
-                    // #[cfg(test)]
-                    // {
-                    //     eprintln!("sub");
-                    //     eprintln!("m: {:16b}", MODULO);
-                    //     eprintln!("l: {:016b}", l);
-                    //     eprintln!("r: {:016b}", r);
-                    //     eprintln!("i: {:016b}", inv);
-                    //     eprintln!("o: {:016b}", out);
-                    // }
+                    #[cfg(test)]
+                    {
+                        eprintln!("\tsub");
+                        // eprintln!("\tm: {:24b}", MODULO);
+                        eprintln!("\tl: {:024b} | {:06x}", l, l);
+                        eprintln!("\tr: {:024b} | {:06x}", r, r);
+                        eprintln!("\ti: {:024b} | {:06x}", inv, inv);
+                        eprintln!("\to: {:024b} | {:06x}", out, out);
+                    }
 
-                    StrangeWord(out % MODULO).assert_sound()
+                    StrangeWord(out).assert_sound()
                 }
 
                 fn rotl(l: &StrangeWord, r: &StrangeWord) -> StrangeWord {
                     let l = l.assert_sound().0;
                     let r = r.assert_sound().0;
-                    let out = (l << (r & (W - 1))) | (l >> (W - (r & (W - 1))));
+                    let out = {
+                        let r = r % W;
+                        (l << r) | (l >> (W - r))
+                    };
+                    let out = out % MODULO;
 
-                    // #[cfg(test)]
-                    // {
-                    //     eprintln!("rotl");
-                    //     eprintln!("m: {:16b}", MODULO);
-                    //     eprintln!("l: {:016b}", l);
-                    //     eprintln!("r: {:016b}", r);
-                    //     eprintln!(" : {}", r);
-                    //     eprintln!("o: {:016b}", out);
-                    // }
+                    #[cfg(test)]
+                    {
+                        eprintln!("\trotl");
+                        // eprintln!("\tm: {:24b}", MODULO);
+                        eprintln!("\tl: {:024b} | {:06x}", l, l);
+                        eprintln!("\tr: {:024b} | {:06x}", r, r);
+                        eprintln!("\t : {} ({} mod {})", r, r % W, W);
+                        eprintln!("\to: {:024b} | {:06x}", out, out);
+                    }
 
-                    StrangeWord(out % MODULO).assert_sound()
+                    StrangeWord(out).assert_sound()
                 }
 
                 fn rotr(l: &StrangeWord, r: &StrangeWord) -> StrangeWord {
                     let l = l.assert_sound().0;
                     let r = r.assert_sound().0;
-                    let out = (l >> (r & (W - 1))) | (l << (W - (r & (W - 1))));
+                    let out = {
+                        let r = r % W;
+                        (l >> r) | (l << (W - r))
+                    };
+                    let out = out % MODULO;
 
-                    // #[cfg(test)]
-                    // {
-                    //     eprintln!("rotr");
-                    //     eprintln!("m: {:16b}", MODULO);
-                    //     eprintln!("l: {:016b}", l);
-                    //     eprintln!("r: {:016b}", r);
-                    //     eprintln!(" : {}", r);
-                    //     eprintln!("o: {:016b}", out);
-                    // }
+                    #[cfg(test)]
+                    {
+                        eprintln!("\trotr");
+                        // eprintln!("\tm: {:24b}", MODULO);
+                        eprintln!("\tl: {:024b} | {:06x}", l, l);
+                        eprintln!("\tr: {:024b} | {:06x}", r, r);
+                        eprintln!("\t : {} ({} mod {})", r, r % W, W);
+                        eprintln!("\to: {:024b} | {:06x}", out, out);
+                    }
 
-                    StrangeWord(out % MODULO).assert_sound()
+                    StrangeWord(out).assert_sound()
                 }
 
                 fn xor(l: &StrangeWord, r: &StrangeWord) -> StrangeWord {
                     let l = l.assert_sound().0;
                     let r = r.assert_sound().0;
                     let out = l.bitxor(r);
+                    let out = out % MODULO;
 
-                    // #[cfg(test)]
-                    // {
-                    //     eprintln!("xor");
-                    //     eprintln!("m: {:16b}", MODULO);
-                    //     eprintln!("l: {:016b}", l);
-                    //     eprintln!("r: {:016b}", r);
-                    //     eprintln!("o: {:016b}", out);
-                    // }
+                    #[cfg(test)]
+                    {
+                        eprintln!("\txor");
+                        // eprintln!("\tm: {:24b}", MODULO);
+                        eprintln!("\tl: {:024b} | {:06x}", l, l);
+                        eprintln!("\tr: {:024b} | {:06x}", r, r);
+                        eprintln!("\to: {:024b} | {:06x}", out, out);
+                    }
 
-                    StrangeWord(out % MODULO).assert_sound()
+                    StrangeWord(out).assert_sound()
                 }
             }
         }

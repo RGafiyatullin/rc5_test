@@ -34,24 +34,16 @@ fn render_text(reg_a: Word, reg_b: Word) -> String {
 
 #[test]
 fn round_trip() {
-    let key = parse_key("00000000000000000000000000000000");
+    let key = parse_key("000102030405060708090a0b0c0d0e0f");
 
     let mut l_table: KeyLTable<B, Word> = Default::default();
     let mut s_table: KeySTable<R, Word> = Default::default();
     crate::algs::expand_key::<Word, R, B, Magic, ByteRepr, Arith>(&key, &mut l_table, &mut s_table);
 
-    // eprintln!("l-table: {:#08x?}", l_table);
-    // eprintln!("s-table: {:#08x?}", s_table);
-
-    let (mut reg_a, mut reg_b) = parse_text("11111111aaaaaaaa");
+    let (mut reg_a, mut reg_b) = parse_text("0001020304050607");
     crate::algs::encrypt::<Word, R, Arith>(&s_table, &mut reg_a, &mut reg_b);
-
-    // eprintln!("reg-a: {:08x?}", reg_a);
-    // eprintln!("reg-b: {:08x?}", reg_b);
-
     crate::algs::decrypt::<Word, R, Arith>(&s_table, &mut reg_a, &mut reg_b);
-
-    assert_eq!(render_text(reg_a, reg_b), "11111111aaaaaaaa");
+    assert_eq!(render_text(reg_a, reg_b), "0001020304050607");
 }
 
 fn run_case(key: &str, plaintext_hex: &str, ciphertext_hex: &str) {
